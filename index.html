@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculatrice Glass</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+
+  body{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    /* Fond coloré pour voir la transparence */
+    background: linear-gradient(135deg, #6C00FF, #00C853, #FFD400, #FF1744);
+    background-size: 300% 300%;
+    animation: bouge 10s ease infinite;
+    padding:15px;
+  }
+  @keyframes bouge{
+    0%{background-position:0% 0%}
+    50%{background-position:100% 100%}
+    100%{background-position:0% 0%}
+  }
+
+  /* LA CALCULATRICE TRANSPARENTE */
+  .calc{
+    width:100%;
+    max-width:340px;
+    padding:20px;
+    border-radius:30px;
+    /* Effet verre */
+    background: rgba(255,255,255,0.18);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(255,255,255,0.35);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+  }
+
+  .calc h2{
+    color:white;
+    text-align:center;
+    font-size:16px;
+    margin-bottom:12px;
+    text-shadow: 0 2px 5px rgba(0,0,0,.3);
+  }
+
+  /* ECRAN TRANSPARENT */
+  #ecran{
+    width:100%;
+    height:70px;
+    background: rgba(0,0,0,0.25);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius:18px;
+    color:white;
+    font-size:32px;
+    font-weight:bold;
+    text-align:right;
+    padding:0 15px;
+    outline:none;
+    margin-bottom:15px;
+  }
+  #ecran::placeholder{color:rgba(255,255,255,0.6)}
+
+  .historique{
+    color:rgba(255,255,255,0.8);
+    text-align:right;
+    font-size:13px;
+    height:18px;
+    margin-bottom:5px;
+  }
+
+  .grille{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:10px;
+  }
+
+  button{
+    height:60px;
+    border-radius:18px;
+    border: 1px solid rgba(255,255,255,0.35);
+    font-size:20px;
+    font-weight:bold;
+    cursor:pointer;
+    color:white;
+    /* Boutons transparents */
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(10px);
+    transition:0.2s;
+  }
+  button:active{
+    transform:scale(0.92);
+    background: rgba(255,255,255,0.35);
+  }
+
+  /* Couleurs spéciales mais toujours transparentes */
+  .orange{
+    background: rgba(255, 145, 0, 0.65);
+  }
+  .vert{
+    background: rgba(0, 200, 83, 0.65);
+  }
+  .rouge{
+    background: rgba(255, 23, 68, 0.6);
+  }
+  .egal{
+    background: rgba(108, 0, 255, 0.7);
+    grid-column: span 2;
+  }
+  .zero{
+    grid-column: span 2;
+  }
+
+</style>
+</head>
+<body>
+
+<div class="calc">
+  <h2>✨ Calculatrice Transparente</h2>
+  <div class="historique" id="historique"></div>
+  <input type="text" id="ecran" placeholder="0" readonly>
+
+  <div class="grille">
+    <button class="rouge" onclick="effacerTout()">C</button>
+    <button onclick="effacerUn()">⌫</button>
+    <button onclick="ajouter('%')">%</button>
+    <button class="orange" onclick="ajouter('/')">÷</button>
+
+    <button onclick="ajouter('7')">7</button>
+    <button onclick="ajouter('8')">8</button>
+    <button onclick="ajouter('9')">9</button>
+    <button class="orange" onclick="ajouter('*')">×</button>
+
+    <button onclick="ajouter('4')">4</button>
+    <button onclick="ajouter('5')">5</button>
+    <button onclick="ajouter('6')">6</button>
+    <button class="orange" onclick="ajouter('-')">-</button>
+
+    <button onclick="ajouter('1')">1</button>
+    <button onclick="ajouter('2')">2</button>
+    <button onclick="ajouter('3')">3</button>
+    <button class="orange" onclick="ajouter('+')">+</button>
+
+    <button class="zero" onclick="ajouter('0')">0</button>
+    <button onclick="ajouter('.')">.</button>
+    <button class="vert" onclick="ajouter('00')">00</button>
+
+    <button class="egal" onclick="calculer()">=</button>
+  </div>
+</div>
+
+<script>
+  let ecran = document.getElementById('ecran');
+  let historique = document.getElementById('historique');
+
+  function ajouter(valeur){
+    if(ecran.value === "Erreur") ecran.value = "";
+    ecran.value += valeur;
+  }
+
+  function effacerTout(){
+    ecran.value = "";
+    historique.innerText = "";
+  }
+
+  function effacerUn(){
+    ecran.value = ecran.value.slice(0, -1);
+  }
+
+  function calculer(){
+    try{
+      let calcul = ecran.value;
+      let resultat = eval(calcul);
+      historique.innerText = calcul + " =";
+      ecran.value = resultat;
+    } catch(e){
+      ecran.value = "Erreur";
+    }
+  }
+
+  // Tu peux aussi utiliser ton clavier
+  document.addEventListener('keydown', (e)=>{
+    if(e.key >= '0' && e.key <= '9' || e.key === '+' || e.key === '-' || e.key === '*' || e.key === '/' || e.key === '.' || e.key === '%'){
+      ajouter(e.key);
+    }
+    if(e.key === 'Enter') calculer();
+    if(e.key === 'Backspace') effacerUn();
+    if(e.key === 'Escape') effacerTout();
+  });
+</script>
+
+</body>
+</html>
